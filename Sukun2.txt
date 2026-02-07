@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SUKUN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#fdeff9,#e0f2ff);
+text-align:center;color:#333;transition:.4s}
+body.night{
+background:#0f172a;color:#e5e7eb}
+.container{padding:30px 20px;animation:fade .6s ease}
+@keyframes fade{from{opacity:0;transform:translateY(20px)}
+to{opacity:1;transform:translateY(0)}}
+.card{
+background:#fff;padding:25px;border-radius:22px;
+max-width:520px;margin:auto;
+box-shadow:0 12px 30px rgba(0,0,0,.12)}
+body.night .card{background:#020617}
+h1{
+font-size:42px;
+background:linear-gradient(90deg,#ff6f91,#845ec2);
+-webkit-background-clip:text;color:transparent}
+input,textarea{
+width:90%;padding:12px;border-radius:10px;
+border:1px solid #ccc;font-size:15px}
+button{
+padding:10px 22px;margin-top:15px;
+border:none;border-radius:20px;
+background:#ff6f91;color:#fff;
+font-size:15px;cursor:pointer}
+button:hover{background:#ff3f6c}
+.emoji{
+font-size:40px;margin:10px;cursor:pointer;
+transition:transform .2s}
+.emoji:hover{transform:scale(1.3)}
+.hidden{display:none}
+.back{background:#60a5fa}
+.toggle{position:fixed;top:10px;right:10px}
+</style>
+</head>
+
+<body>
+
+<button class="toggle" onclick="toggleNight()">🌙</button>
+
+<!-- LOGIN -->
+<div class="container card" id="login">
+<h1>SUKUN</h1>
+<p id="passText"></p>
+<input type="password" id="pass" placeholder="Passcode">
+<br>
+<button onclick="checkPass()">Enter</button>
+<p id="error"></p>
+</div>
+
+<!-- MAIN -->
+<div class="container hidden" id="main">
+<h2 id="moodText"></h2>
+<div>
+<span class="emoji" onclick="openCard('e1')">😊</span>
+<span class="emoji" onclick="openCard('e2')">😔</span>
+<span class="emoji" onclick="openCard('e3')">😘</span>
+<span class="emoji" onclick="openCard('e4')">😂</span>
+<span class="emoji" onclick="openCard('e5')">😡</span>
+<span class="emoji" onclick="openCard('e6')">🤗</span>
+<span class="emoji" onclick="openCard('e7')">😴</span>
+<span class="emoji" onclick="openCard('e8')">🎉</span>
+<span class="emoji" onclick="openCard('love')">💌</span>
+</div>
+</div>
+
+<!-- EMOJI CARDS -->
+<div class="container card hidden" id="e1"><p>Tumhari smile sukoon deti hai 😊</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e2"><p>Jo bhi ho… tum akeli nahi ho 😔</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e3"><p>Kuch ehsaas lafzon se zyada keemti hote hain 😘</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e4"><p>Tumhari hasi alag level ki hai 😂</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e5"><p>Thoda gussa bhi theek hai 😡</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e6"><p>Virtual hug 🤗</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e7"><p>Aaj thoda rest 😴</p><button class="back" onclick="goBack()">Back</button></div>
+<div class="container card hidden" id="e8"><p>Aaj kuch special hai 🎉</p><button class="back" onclick="goBack()">Back</button></div>
+
+<!-- 💌 WRITE -->
+<div class="container card hidden" id="love">
+<h3>💌 Apni Baat Likho</h3>
+<textarea id="msg" rows="6" maxlength="1000"
+placeholder="Jo mann ho likh do… (1000 words max)"></textarea>
+<br>
+<button onclick="saveMsg()">Send</button>
+<p id="sent"></p>
+<button class="back" onclick="goBack()">Back</button>
+</div>
+
+<!-- OWNER -->
+<div class="container card hidden" id="owner">
+<h3>Owner Messages 💌</h3>
+<div id="allMsgs"></div>
+</div>
+
+<script>
+const passLines=[
+"Kya tum itna bhi nahi jaante ho…",
+"Aree socho yaar…",
+"Bas ek pyaari si dosti 💙"
+];
+passText.innerText=passLines[Math.floor(Math.random()*passLines.length)];
+
+const moods=[
+"Tum theek ho na 🙂",
+"Aaj ka mood kya hai?",
+"Dil kya keh raha hai?"
+];
+moodText.innerText=moods[Math.floor(Math.random()*moods.length)];
+
+function checkPass(){
+if(pass.value==="14.25"){
+login.classList.add("hidden");
+main.classList.remove("hidden");
+}else if(pass.value==="2016"){
+login.classList.add("hidden");
+owner.classList.remove("hidden");
+loadMsgs();
+}else{
+error.innerText="Galat hai… phir socho 😉";
+}}
+
+function openCard(id){
+main.classList.add("hidden");
+document.getElementById(id).classList.remove("hidden");
+}
+function goBack(){
+document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
+main.classList.remove("hidden");
+}
+function saveMsg(){
+let arr=JSON.parse(localStorage.getItem("msgs")||"[]");
+arr.push(msg.value);
+localStorage.setItem("msgs",JSON.stringify(arr));
+msg.value="";
+sent.innerText="Tumhari baat safely pahunch gayi 💙";
+}
+function loadMsgs(){
+let arr=JSON.parse(localStorage.getItem("msgs")||"[]");
+allMsgs.innerHTML=arr.map(m=>"<p>• "+m+"</p>").join("");
+}
+function toggleNight(){
+document.body.classList.toggle("night");
+}
+</script>
+
+</body>
+</html>
